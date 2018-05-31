@@ -3,7 +3,9 @@ angular-minicolors
 
 ## General
 
-My first try of wrtiting a wrapper-directive around JQuery MiniColors by [Cory LaViska ](https://github.com/claviska) [https://github.com/claviska/jquery-minicolors](https://github.com/claviska/jquery-minicolors)
+Forked from https://github.com/kaihenzler/angular-minicolors.
+
+A wrapper directive around JQuery MiniColors by [Cory LaViska ](https://github.com/claviska) [https://github.com/claviska/jquery-minicolors](https://github.com/claviska/jquery-minicolors)
 
 Works with Bootstrap 3 and works fine with mobile browsers such as Safari on iPad.
 
@@ -37,16 +39,14 @@ The files you need are: `jquery-minicolors.js` `jquery-minicolors.css` and `jque
   //using for example these settings inside your controller
   $scope.customSettings = {
     control: 'brightness',
-    theme: 'bootstrap',
-    position: 'top left'
+    format: 'rgb',
+    opacity: true
   };
 
 </script>
 ```
 
 angular-minicolors is planned to be API compatible with: [http://labs.abeautifulsite.net/jquery-minicolors/](http://labs.abeautifulsite.net/jquery-minicolors/)
-
-keep in mind, that this is my first public angular-directive and it is by far not finished.
 
 ## default config
 
@@ -61,6 +61,7 @@ the default config is as follows:
   change: null,
   changeDelay: 0,
   control: 'hue',
+  format: 'hex',
   hide: null,
   hideSpeed: 100,
   inline: false,

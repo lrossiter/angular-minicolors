@@ -24,6 +24,7 @@
       change: null,
       changeDelay: 0,
       control: 'hue',
+      format: 'hex',
       hide: null,
       hideSpeed: 100,
       inline: false,
@@ -60,7 +61,13 @@
          * @param color
          */
         function isValidColor(color) {
-          return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
+          return isRgb(color) || /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
+        }
+
+        // Checks if a string is a valid RGB(A) string
+        function isRgb(string) {
+            var rgb = string.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+            return (rgb && rgb.length === 4) ? true : false;
         }
 
         function canSetValue() {
