@@ -45,6 +45,7 @@
     return {
       require: '?ngModel',
       restrict: 'A',
+      scope: {minicolors:'='},
       priority: 1, //since we bind on an input element, we have to set a higher priority than angular-default input
       template: '<div class="minicolors-slider minicolors-sidepanel">' +
         '<label for="red">Red:<input id="red" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="red"/></label>' +
@@ -57,7 +58,7 @@
 
         //gets the settings object
         var getSettings = function() {
-          var config = angular.extend({}, minicolors.defaults, scope.$eval(attrs.minicolors));
+          var config = angular.extend({}, minicolors.defaults, scope.minicolors);
           return config;
         };
 
