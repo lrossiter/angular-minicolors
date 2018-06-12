@@ -1,6 +1,6 @@
 {
   "name": "angular-minicolors",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "homepage": "https://github.com/kaihenzler/angular-minicolors",
   "authors": [
     "Kai Henzler <kai.henzler@gmx.de>"
@@ -14,7 +14,10 @@
     "color",
     "picker"
   ],
-  "main": "angular-minicolors.js",
+  "main": [
+    "angular-minicolors.js",
+    "angular-minicolors.css"
+  ],
   "dependencies": {
     "jquery-minicolors": "^2.2.6"
   },

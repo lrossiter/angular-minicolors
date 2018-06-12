@@ -31,6 +31,7 @@
       letterCase: 'lowercase',
       opacity: false,
       show: null,
+      showRGB: false,
       showSpeed: 100
     };
 
@@ -45,6 +46,11 @@
       require: '?ngModel',
       restrict: 'A',
       priority: 1, //since we bind on an input element, we have to set a higher priority than angular-default input
+      template: '<div class="minicolors-slider minicolors-sidepanel">' +
+        '<label for="red">Red:<input id="red" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="red"/></label>' +
+        '<label for="green">Green:<input id="green" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="green"/></label>' +
+        '<label for="blue">Blue:<input id="blue" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="blue"/></label>' +
+        '<label for="opacity">Opacity:<input id="opacity" class="minicolors-sidepanel-color" type="number" min="0" max="1" step="0.01" ng-model="opacity"/></label></div>',
       link: function(scope, element, attrs, ngModel) {
 
         var inititalized = false;
@@ -70,8 +76,36 @@
             return (rgb && rgb.length === 4) ? true : false;
         }
 
+        // Parses a object and returns a valid hex + opacity
+        function rgb2hex(rgb) {
+            rgb.r = keepWithin(parseInt(rgb.r, 10), 0, 255);
+            rgb.g = keepWithin(parseInt(rgb.g, 10), 0, 255);
+            rgb.b = keepWithin(parseInt(rgb.b, 10), 0, 255);
+            if(rgb.a) {
+                rgb.a = keepWithin(parseFloat(rgb.a, 10), 0, 1);
+            }
+
+            if( !rgb ) {return null;}
+
+            if( typeof rgb.a !== 'undefined' && rgb.a !== null ) {
+                return {
+                    color: '#' + ('0'+rgb.r.toString(16)).slice(-2) + ('0'+rgb.g.toString(16)).slice(-2) + ('0'+rgb.b.toString(16)).slice(-2),
+                    opacity: rgb.a
+                };
+            } else {
+                return '#' + ('0'+rgb.r.toString(16)).slice(-2) + ('0'+rgb.g.toString(16)).slice(-2) + ('0'+rgb.b.toString(16)).slice(-2);
+            }
+        }
+
+        // Keeps value within min and max
+        function keepWithin(value, min, max) {
+            if(value < min) value = min;
+            if(value > max) value = max;
+            return value;
+        }
+
         function canSetValue() {
-          return (element.data('minicolors-settings') != null)
+            return (element.data('minicolors-settings') != null)
         }
 
         /**
@@ -92,8 +126,28 @@
           $timeout(function() {
             var color = ngModel.$viewValue;
             setMinicolorsValue(color);
+            element.blur();
           }, 0, false);
         };
+
+        ngModel.$parsers.push(function(value) {
+          var settings = getSettings();
+          var format = (settings.modelFormat && settings.modelFormat.toLowerCase()) || settings.format.toLowerCase();
+
+          if (format !== settings.format.toLowerCase()) {
+              if (format === 'rgba') {
+                  return element.minicolors('rgbaString');
+              } else if (format === 'rgb') {
+                  return element.minicolors('rgbString');
+              } else if (format === 'hex' && isRgb(value)) {
+                  return rgbString2hex(value);
+              }
+          }
+
+          return value;
+        });
+
+        var colorWatch;
 
         //init method
         var initMinicolors = function() {
@@ -106,7 +160,53 @@
             scope.$apply(function() {
               if (isValidColor(hex))
                 ngModel.$setViewValue(hex);
+                var rgb = element.minicolors('rgbObject');
+                scope.red = rgb.r;
+                scope.green = rgb.g;
+                scope.blue = rgb.b;
+                scope.opacity = rgb.a;
             });
+          };
+
+          colorWatch = scope.$watch(function() {
+              return {
+                  r: scope.red,
+                  g: scope.green,
+                  b: scope.blue,
+                  a: scope.opacity
+              };
+            },
+            function(newVal, oldVal) {
+              if (oldVal && oldVal.r >= 0 && newVal && newVal.r >= 0 && newVal.g >= 0 && newVal.b >= 0) {
+                  element.minicolors('value', rgb2hex(newVal));
+              }
+            },
+            true
+          );
+
+          settings.show = function() {
+              var panel = $(this).siblings('div.minicolors-panel.minicolors-slider-hue');
+              var sidePanel = $(this).children();
+
+              if(settings.showRGB)
+              {
+                  sidePanel.appendTo(panel)
+                  .on('mousedown.minicolors touchstart.minicolors', function(event)
+                  {
+                      event.stopPropagation();
+                  })
+                  .on('keydown.minicolors', '.minicolors-input', function(event)
+                  {
+                      var input = $(this);
+                      if(!input.data('minicolors-initialized')) return;
+                      switch(event.keyCode)
+                      {
+                          case 9: // tab
+                              event.stopPropagation();
+                              break;
+                      }
+                  });
+              }
           };
 
           //destroy the old colorpicker if one already exists
@@ -154,6 +254,7 @@
               element.remove();
           }
           if (unbindWatch) unbindWatch();
+          if (colorWatch) {colorWatch();}
         });
 
       }
