@@ -6,6 +6,7 @@
   font-size: 11.5px;
   top: 0;
   padding-top: 2px;
+  cursor: initial;
 }
 
 .minicolors-with-opacity .minicolors-panel {
