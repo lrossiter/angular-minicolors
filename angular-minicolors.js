@@ -85,7 +85,8 @@
                         return isRgb(color) || isHex(color);
                     }
 
-                    function isHex(color) {
+                    function isHex(color)
+                    {
                         return /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
                     }
 
@@ -246,7 +247,7 @@
                             },
                             function(newVal, oldVal)
                             {
-                                if (document.activeElement.classList.contains('minicolors-sidepanel-color'))
+                                if(document.activeElement.classList.contains('minicolors-sidepanel-color'))
                                 {
                                     if(oldVal && oldVal.r >= 0 && newVal && newVal.r >= 0 && newVal.g >= 0 && newVal.b >= 0)
                                     {
@@ -257,6 +258,7 @@
                             true
                         );
 
+                        var eventsBound = false;
                         settings.show = function()
                         {
                             var panel = $(this).siblings('div.minicolors-panel.minicolors-slider-hue');
@@ -273,50 +275,74 @@
                                 .on('blur', 'label:last-child input', hideIfFocusLeft);
 
                                 // bind events to the actual input element
-                                $(this)
-                                .on('keydown.minicolors', function(event)
+                                if(!eventsBound)
                                 {
-                                    var input = $(this);
-                                    if(!input.data('minicolors-initialized'))
+                                    $(this)
+                                    .on('keydown.minicolors', function(event)
                                     {
-                                        return;
-                                    }
-                                    switch(event.keyCode)
+                                        var input = $(this);
+                                        if(!input.data('minicolors-initialized'))
+                                        {
+                                            return;
+                                        }
+                                        switch(event.keyCode)
+                                        {
+                                            case 9: // tab
+                                                if(settings.showRGB)
+                                                {
+                                                    event.stopPropagation();
+                                                }
+                                                break;
+                                        }
+                                    })
+                                    .on('keydown', function(event)
                                     {
-                                        case 9: // tab
-                                            if(settings.showRGB) {
-                                                event.stopPropagation();
-                                            }
-                                            break;
-                                    }
-                                })
-                                .on('keyup',  function(event) {
-                                    if (
-                                        event.which === 8       //backspace
-                                        || event.which === 46   //delete
-                                        || (event.which >= 48 && event.which <= 70)     // 0-9, a-f
-                                        || (event.which >= 96 && event.which <= 105)    // num0-9
-                                    ) {
-                                        resetOpacity(event);
-                                    }
-                                })
-                                // Update on paste
-                                .on('paste', resetOpacity)
-                                .on('blur', hideIfFocusLeft);
+                                        if(
+                                            event.which === 8       //backspace
+                                            || event.which === 46   //delete
+                                            || (!event.metaKey && !event.ctrlKey)
+                                            && (
+                                                (event.which >= 48 && event.which <= 70)     // 0-9, a-f
+                                                || (event.which >= 96 && event.which <= 105)    // num0-9
+                                            )
+                                        )
+                                        {
+                                            resetOpacity(event);
+                                        }
+                                    })
+                                    // Update on paste
+                                    .on('paste', resetOpacity)
+                                    .on('blur', hideIfFocusLeft);
+
+                                    eventsBound = true;
+                                }
                             }
                         };
 
-                        function resetOpacity(event) {
-                            $timeout(function() {
-                                if (isHex(ngModel.$viewValue) && event.target && event.target.getAttribute('data-opacity')) {
-                                    event.target.setAttribute('data-opacity',1);
+                        function resetOpacity(event)
+                        {
+                            $timeout(function()
+                            {
+                                if(isHex(ngModel.$viewValue) && event.target && event.target.getAttribute('data-opacity'))
+                                {
+                                    event.target.setAttribute('data-opacity', 1);
+                                    // Manually Set swatch opacity as it doesn't automatically do it
+                                    var swatch = $(this).siblings('.minicolors-input-swatch');
+                                    swatch.find('span').css({
+                                        opacity: 1
+                                    });
                                 }
-                            },0);
+                            }, 0);
                         }
 
-                        function hideIfFocusLeft(event) {
-                            var focusLeftControl = !$.contains($(event.target).parents('.minicolors')[0],event.relatedTarget);
-                            if (focusLeftControl) {
+                        function hideIfFocusLeft(event)
+                        {
+                            var focusLeftControl = !$.contains(
+                                $(event.target).parents('.minicolors')[0],
+                                event.relatedTarget
+                            );
+                            if(focusLeftControl)
+                            {
                                 element.minicolors('hide');
                             }
                         }
