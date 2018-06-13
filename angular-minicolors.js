@@ -62,7 +62,7 @@
                 '<label for="red">Red:<input id="red" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="red"/></label>' +
                 '<label for="green">Green:<input id="green" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="green"/></label>' +
                 '<label for="blue">Blue:<input id="blue" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="blue"/></label>' +
-                '<label for="opacity">Opacity:<input id="opacity" class="minicolors-sidepanel-color" type="number" min="0" max="1" step="0.01" ng-model="opacity"/></label></div>',
+                '<label for="opacity">Opacity:<input id="opacity" autocomplete="disabled" class="minicolors-sidepanel-color" type="number" min="0" max="1" step="0.01" ng-model="opacity"/></label></div>',
                 link: function(scope, element, attrs, ngModel)
                 {
 
