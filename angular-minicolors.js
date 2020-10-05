@@ -59,13 +59,13 @@
                 scope: {minicolors: '='},
                 priority: 1, //since we bind on an input element, we have to set a higher priority than angular-default input
                 template: '<div class="minicolors-slider minicolors-sidepanel">' +
-                '<label for="red">Red:<input id="red" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="red"/></label>' +
-                '<label for="green">Green:<input id="green" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="green"/></label>' +
-                '<label for="blue">Blue:<input id="blue" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="blue"/></label>' +
-                '<label for="opacity">Opacity:<input id="opacity" autocomplete="disabled" class="minicolors-sidepanel-color" type="number" min="0" max="1" step="0.01" ng-model="opacity"/></label></div>',
+                '<label for="{{idPrefix}}-red">Red:<input id="{{idPrefix}}-red" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="red"/></label>' +
+                '<label for="{{idPrefix}}-green">Green:<input id="{{idPrefix}}-green" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="green"/></label>' +
+                '<label for="{{idPrefix}}-blue">Blue:<input id="{{idPrefix}}-blue" class="minicolors-sidepanel-color" type="number" min="0" max="255" ng-model="blue"/></label>' +
+                '<label for="{{idPrefix}}-opacity">Opacity:<input id="{{idPrefix}}-opacity" autocomplete="disabled" class="minicolors-sidepanel-color" type="number" min="0" max="1" step="0.01" ng-model="opacity"/></label></div>',
                 link: function(scope, element, attrs, ngModel)
                 {
-
+                    scope.idPrefix = element.attr('id') || Math.random().toString(36).substring(2, 15);
                     var inititalized = false;
 
                     //gets the settings object
@@ -337,7 +337,7 @@
 
                         function hideIfFocusLeft(event)
                         {
-                            var focusLeftControl = !$.contains(
+                            var focusLeftControl = event.relatedTarget && !$.contains(
                                 $(event.target).parents('.minicolors')[0],
                                 event.relatedTarget
                             );
